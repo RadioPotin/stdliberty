@@ -1,0 +1,4 @@
+(library
+ (name stdlib)
+ (modules unit bool char)
+ (wrapped false))
