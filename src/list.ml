@@ -39,4 +39,26 @@ let nth_exn l i =
 
 let nth = nth_opt
 
-(* append rev_append rev init flatten map mapi rev_map iter iteri fold_left fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let append = (@)
+
+let rec rev_append l1 l2 =
+  match l1 with
+  | [] -> l2
+  | x::r -> rev_append r (x::l2)
+
+let rev l = rev_append l []
+
+let init =
+    let rec init_aux acc i f len =
+      if i >= len then acc
+      else
+        init_aux ((f i)::acc) (i + 1) f len
+    in fun len f ->
+      if len < 0 then
+        invalid_arg "init"
+      else
+        rev (init_aux [] 0 f len)
+
+
+
+(* flatten map mapi rev_map iter iteri fold_left fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
