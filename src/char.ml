@@ -1,8 +1,9 @@
 type t = char
 
-let unsafe_chr c = Obj.magic c
 
-let code c = Obj.magic c
+let unsafe_chr : int -> char = Obj.magic
+
+let code : char -> int = Obj.magic
 
 let chr ascii = if 0 <= ascii && ascii <= 255 then unsafe_chr ascii else raise (Invalid_argument "Invalid_argument")
 
