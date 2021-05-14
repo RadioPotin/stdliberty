@@ -1,4 +1,9 @@
 (library
- (name stdlib)
+ (name stdliberty)
  (modules unit bool char list)
- (wrapped false))
+ (wrapped true))
+
+(executable
+ (name main)
+ (modules main)
+ (libraries stdliberty))
