@@ -15,4 +15,4 @@ let print_list_list l =
 
 let () =
   let l1 = [[0;1;2;3;4];[5;6;7;8;9];[10;11;12;13;14];[]] in
-  print_list_el Format.std_formatter (Stdliberty.List.mapi (fun x -> x * 2) 3 (Stdliberty.List.hd l1))
+  print_list_el Format.std_formatter (Stdliberty.List.rev_map (fun x -> x * 2) (Stdliberty.List.hd l1))

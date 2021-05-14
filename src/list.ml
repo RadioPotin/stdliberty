@@ -81,6 +81,24 @@ let mapi =
         mapi_aux f (cons x acc) (i - 1) r
   in fun f i l -> rev (mapi_aux f [] i l)
 
-let rev_map = map
+let rev_map f l = rev (map f l)
 
-(* iter iteri fold_left fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let iter =
+  let rec iter_aux f = function
+    | [] -> ()
+    | x::r -> f x; iter_aux f r
+in fun f l -> iter_aux f l
+
+let iteri =
+  let rec iteri_aux f i = function
+    | [] -> ()
+    | x::r ->
+      if i = 0 then
+        f x
+      else
+        iteri_aux f (i - 1) r
+in fun f i l -> iteri_aux f i l
+
+
+
+(* fold_left fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
