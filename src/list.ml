@@ -61,9 +61,9 @@ let init =
 
 let flatten =
   let rec flatten_aux acc = function
-    | [] -> rev acc
+    | [] -> acc
     | x::r -> flatten_aux (cons x acc) r
-      in fun l -> flatten_aux [] l
+      in fun l -> rev (flatten_aux [] l)
 
 let map =
   let rec map_aux f acc = function
