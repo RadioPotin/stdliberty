@@ -62,24 +62,20 @@ let init =
 let flatten =
   let rec flatten_aux acc = function
     | [] -> acc
-    | x::r -> flatten_aux (cons x acc) r
+    | x::r -> flatten_aux (x::acc) r
       in fun l -> rev (flatten_aux [] l)
 
-let map =
+let map f =
   let rec map_aux f acc = function
     | [] -> acc
-    | x::r -> map_aux f (cons (f x) acc) r
-  in fun f l -> rev (map_aux f [] l)
+    | x::r -> map_aux f ((f x)::acc) r
+  in fun l -> rev (map_aux f [] l)
 
 let mapi =
-  let rec mapi_aux f acc i = function
+  let rec mapi_aux f i acc = function
     | [] -> acc
-    | x::r ->
-      if i = 0 then
-        mapi_aux f (cons (f x) acc) (i - 1) r
-      else
-        mapi_aux f (cons x acc) (i - 1) r
-  in fun f i l -> rev (mapi_aux f [] i l)
+    | x::r -> mapi_aux f (i + 1) ((f i x)::acc) r
+  in fun f l -> rev (mapi_aux f 0 [] l)
 
 let rev_map f l = rev (map f l)
 
@@ -99,6 +95,10 @@ let iteri =
         iteri_aux f (i - 1) r
 in fun f i l -> iteri_aux f i l
 
+let fold_left =
+  let rec fold_left_aux f acc = function
+    | [] -> acc
+    | x::r -> fold_left_aux f (f acc x) r
+  in fun f l -> fold_left_aux f [] l
 
-
-(* fold_left fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+(* fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
