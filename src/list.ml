@@ -88,12 +88,8 @@ in fun f l -> iter_aux f l
 let iteri =
   let rec iteri_aux f i = function
     | [] -> ()
-    | x::r ->
-      if i = 0 then
-        f x
-      else
-        iteri_aux f (i - 1) r
-in fun f i l -> iteri_aux f i l
+    | x::r -> f i x; iteri_aux f (i + 1) r
+in fun f l -> iteri_aux f 0 l
 
 let fold_left =
   let rec fold_left_aux f acc = function
