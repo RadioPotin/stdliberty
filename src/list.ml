@@ -118,6 +118,15 @@ let iter2 =
   let rec iter2_aux f = function
     | [], [] -> ()
     | x1::r1, x2::r2 -> f x1 x2; iter2_aux f (r1, r2)
-    | _ -> invalid_arg "map2"
+    | _ -> invalid_arg "iter2"
 in fun f l1 l2 -> iter2_aux f (l1, l2)
-(* iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+
+let fold_left2 =
+  let rec fold_left2_aux f acc = function
+    | [], [] -> acc
+    | x1::r1, x2::r2 -> fold_left2_aux f (f acc x1 x2) (r1, r2)
+    | _ -> invalid_arg "fold_left2"
+  in fun f l1 l2 -> fold_left2_aux f [] (l1, l2)
+
+
+(* fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
