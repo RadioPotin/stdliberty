@@ -16,12 +16,12 @@ let hd = function
   | x::_r -> x
 
 let tl = function
-  | [] -> raise (Invalid_argument "Invalid_argument")
+  | [] -> invalid_arg "Invalid_argument"
   | _x::r -> r
 
 let nth_opt l i =
   if i < 0 then
-    raise (Invalid_argument "nth_opt")
+    invalid_arg "nth_opt"
   else
     let rec nth_aux i = function
       | [] -> None
@@ -30,7 +30,7 @@ let nth_opt l i =
 
 let nth_exn l i =
   if i < 0 then
-    raise (Invalid_argument "nth_exn")
+    invalid_arg "nth_exn"
   else
     let rec nth_aux i = function
       | [] -> failwith "nth_exn"
@@ -97,4 +97,22 @@ let fold_left =
     | x::r -> fold_left_aux f (f acc x) r
   in fun f l -> fold_left_aux f [] l
 
-(* fold_right map2 rev_map2 iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+
+let fold_right =
+  let rec fold_right_aux f acc = function
+    | [] -> acc
+    |x::r -> f x (fold_right_aux f acc r)
+  in fun f l acc -> fold_right_aux f acc l
+
+let map2 f =
+  let rec map2_aux l1 l2 =
+    match (l1, l2) with
+    | ([], []) -> []
+    | (x1::r1, x2::r2)  -> (f x1 x2)::(map2_aux r1 r2)
+    | _ -> invalid_arg "map2"
+  in fun l1 l2 ->
+      rev (map2_aux l1 l2)
+
+let rev_map2 f l1 l2 = rev (map2 f l1 l2)
+
+(* iter2 fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
