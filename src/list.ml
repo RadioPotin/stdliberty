@@ -153,4 +153,23 @@ let for_all2 f =
     | _ -> invalid_arg "for_all2"
   in fun l1 l2 -> for_all2_aux (l1, l2)
 
-(* exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let exists2 f =
+  let rec exists2_aux = function
+    | [], [] -> false
+    | x1::r1, x2::r2 -> if f x1 x2 then true else exists2_aux (r1, r2)
+    | _ -> invalid_arg "exists2"
+  in fun l1 l2 -> exists2_aux (l1, l2)
+
+let mem =
+  let rec memaux a = function
+    | [] -> false
+    | x::r -> if a = x then true else memaux a r
+in fun a set -> memaux a set
+
+let memq =
+  let rec memqaux a = function
+    | [] -> false
+    | x::r -> if a == x then true else memqaux a r
+in fun a set -> memqaux a set
+
+(* assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
