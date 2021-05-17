@@ -97,11 +97,10 @@ let fold_left =
     | x::r -> fold_left_aux f (f acc x) r
   in fun f l -> fold_left_aux f [] l
 
-
 let fold_right =
   let rec fold_right_aux f acc = function
     | [] -> acc
-    |x::r -> f x (fold_right_aux f acc r)
+    | x::r -> f x (fold_right_aux f acc r)
   in fun f l acc -> fold_right_aux f acc l
 
 let map2 f =
@@ -128,5 +127,30 @@ let fold_left2 =
     | _ -> invalid_arg "fold_left2"
   in fun f l1 l2 -> fold_left2_aux f [] (l1, l2)
 
+let fold_right2 =
+  let rec fold_right2_aux f acc = function
+    | [], [] -> acc
+    | x1::r1, x2::r2 -> f x1 x2 (fold_right2_aux f acc (r1, r2))
+    | _ -> invalid_arg "fold_right2"
+  in fun f l1 l2 acc -> fold_right2_aux f acc (l1, l2)
 
-(* fold_left2 fold_right2 for_all exists for_all2 exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let for_all f =
+  let rec for_all_aux = function
+    | [] -> true
+    | x::r -> if f x then for_all_aux r else false
+  in fun l -> for_all_aux l
+
+let exists f =
+  let rec exists_aux = function
+    | [] -> false
+    | x::r -> if f x then true else exists_aux r
+  in fun l -> exists_aux l
+
+let for_all2 f =
+  let rec for_all2_aux = function
+    | [], [] -> true
+    | x1::r1, x2::r2 -> if f x1 x2 then for_all2_aux (r1, r2) else false
+    | _ -> invalid_arg "for_all2"
+  in fun l1 l2 -> for_all2_aux (l1, l2)
+
+(* exists2 mem memq assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
