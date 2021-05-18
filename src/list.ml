@@ -62,163 +62,192 @@ let init =
 let flatten =
   let rec flatten_aux acc = function
     | [] -> acc
-    | x::r -> flatten_aux (x::acc) r
+    | x::r -> flatten_aux (x @ acc) r
       in fun l -> rev (flatten_aux [] l)
 
 let map f =
-  let rec map_aux f acc = function
+  let rec map_aux acc = function
     | [] -> acc
-    | x::r -> map_aux f ((f x)::acc) r
-  in fun l -> rev (map_aux f [] l)
+    | x::r -> map_aux ((f x)::acc) r
+  in fun l -> rev (map_aux [] l)
 
-let mapi =
-  let rec mapi_aux f i acc = function
+let mapi f =
+  let rec mapi_aux i acc = function
     | [] -> acc
-    | x::r -> mapi_aux f (i + 1) ((f i x)::acc) r
-  in fun f l -> rev (mapi_aux f 0 [] l)
+    | x::r -> mapi_aux (i + 1) ((f i x)::acc) r
+  in fun l -> rev (mapi_aux 0 [] l)
 
-let rev_map f l = rev (map f l)
+let rev_map f =
+  let rec map_aux acc = function
+    | [] -> acc
+    | x::r -> map_aux ((f x)::acc) r
+  in fun l -> map_aux [] l
 
-let iter =
-  let rec iter_aux f = function
+let iter f =
+  let rec iter_aux = function
     | [] -> ()
-    | x::r -> f x; iter_aux f r
-in fun f l -> iter_aux f l
+    | x::r -> f x; iter_aux r
+in fun l -> iter_aux l
 
-let iteri =
-  let rec iteri_aux f i = function
+let iteri f =
+  let rec iteri_aux i = function
     | [] -> ()
-    | x::r -> f i x; iteri_aux f (i + 1) r
-in fun f l -> iteri_aux f 0 l
+    | x::r -> f i x; iteri_aux (i + 1) r
+in fun l -> iteri_aux 0 l
 
-let fold_left =
-  let rec fold_left_aux f acc = function
+let fold_left f =
+  let rec fold_left_aux acc = function
     | [] -> acc
-    | x::r -> fold_left_aux f (f acc x) r
-  in fun f l -> fold_left_aux f [] l
+    | x::r -> fold_left_aux (f acc x) r
+  in fun l -> fold_left_aux [] l
 
-let fold_right =
-  let rec fold_right_aux f acc = function
+let fold_right f =
+  let rec fold_right_aux acc = function
     | [] -> acc
-    | x::r -> f x (fold_right_aux f acc r)
-  in fun f l acc -> fold_right_aux f acc l
+    | x::r -> f x (fold_right_aux acc r)
+  in fun l acc -> fold_right_aux acc l
 
 let map2 f =
-  let rec map2_aux = function
-    | [], [] -> []
-    | x1::r1, x2::r2  -> (f x1 x2)::(map2_aux (r1, r2))
+  let rec map2_aux acc l1 l2 =
+    match l1, l2 with
+    | [], [] -> acc
+    | x1::r1, x2::r2  -> map2_aux ((f x1 x2)::acc) r1 r2
     | _ -> invalid_arg "map2"
   in fun l1 l2 ->
-      rev (map2_aux (l1, l2))
+    rev (map2_aux [] l1 l2)
 
-let rev_map2 f l1 l2 = rev (map2 f l1 l2)
+let rev_map2 f =
+  let rec revmap2_aux acc l1 l2 =
+    match l1, l2 with
+    | [], [] -> acc
+    | x1::r1, x2::r2  -> revmap2_aux ((f x1 x2)::acc) r1 r2
+    | _ -> invalid_arg "revmap2"
+  in fun l1 l2 ->
+    revmap2_aux [] l1 l2
 
-let iter2 =
-  let rec iter2_aux f = function
+let iter2 f =
+  let rec iter2_aux l1 l2 =
+    match l1, l2 with
     | [], [] -> ()
-    | x1::r1, x2::r2 -> f x1 x2; iter2_aux f (r1, r2)
+    | x1::r1, x2::r2 -> f x1 x2; iter2_aux r1 r2
     | _ -> invalid_arg "iter2"
-in fun f l1 l2 -> iter2_aux f (l1, l2)
+in fun l1 l2 -> iter2_aux l1 l2
 
-let fold_left2 =
-  let rec fold_left2_aux f acc = function
+let fold_left2 f =
+  let rec fold_left2_aux acc l1 l2 =
+    match l1, l2 with
     | [], [] -> acc
-    | x1::r1, x2::r2 -> fold_left2_aux f (f acc x1 x2) (r1, r2)
+    | x1::r1, x2::r2 -> fold_left2_aux (f acc x1 x2) r1 r2
     | _ -> invalid_arg "fold_left2"
-  in fun f l1 l2 -> fold_left2_aux f [] (l1, l2)
+  in fun l1 l2 -> fold_left2_aux [] l1 l2
 
-let fold_right2 =
-  let rec fold_right2_aux f acc = function
+let fold_right2 f =
+  let rec fold_right2_aux l1 l2 acc =
+    match l1, l2 with
     | [], [] -> acc
-    | x1::r1, x2::r2 -> f x1 x2 (fold_right2_aux f acc (r1, r2))
+    | x1::r1, x2::r2 -> f x1 x2 (fold_right2_aux r1 r2 acc)
     | _ -> invalid_arg "fold_right2"
-  in fun f l1 l2 acc -> fold_right2_aux f acc (l1, l2)
+  in fun l1 l2 acc -> fold_right2_aux l1 l2 acc
 
 let for_all f =
   let rec for_all_aux = function
     | [] -> true
-    | x::r -> if f x then for_all_aux r else false
+    | x::r -> f x && for_all_aux r
   in fun l -> for_all_aux l
 
 let exists f =
   let rec exists_aux = function
     | [] -> false
-    | x::r -> if f x then true else exists_aux r
+    | x::r -> f x || exists_aux r
   in fun l -> exists_aux l
 
 let for_all2 f =
-  let rec for_all2_aux = function
+  let rec for_all2_aux l1 l2 =
+    match l1, l2 with
     | [], [] -> true
-    | x1::r1, x2::r2 -> if f x1 x2 then for_all2_aux (r1, r2) else false
+    | x1::r1, x2::r2 -> f x1 x2 && for_all2_aux r1 r2
     | _ -> invalid_arg "for_all2"
-  in fun l1 l2 -> for_all2_aux (l1, l2)
+  in fun l1 l2 -> for_all2_aux l1 l2
 
 let exists2 f =
-  let rec exists2_aux = function
+  let rec exists2_aux l1 l2 =
+    match l1, l2 with
     | [], [] -> false
-    | x1::r1, x2::r2 -> if f x1 x2 then true else exists2_aux (r1, r2)
+    | x1::r1, x2::r2 ->  f x1 x2 || exists2_aux r1 r2
     | _ -> invalid_arg "exists2"
-  in fun l1 l2 -> exists2_aux (l1, l2)
+  in fun l1 l2 -> exists2_aux l1 l2
 
-let mem =
-  let rec memaux a = function
+let mem a =
+  let rec memaux = function
     | [] -> false
-    | x::r -> if a = x then true else memaux a r
-in fun a set -> memaux a set
+    | x::r -> a = x || memaux r
+in fun set -> memaux set
 
-let memq =
-  let rec memqaux a = function
+let memq a =
+  let rec memqaux = function
     | [] -> false
-    | x::r -> if a == x then true else memqaux a r
-in fun a set -> memqaux a set
+    | x::r -> a == x || memqaux r
+in fun set -> memqaux set
 
-let assoc =
-  let rec assoc_aux a = function
+let assoc a =
+  let rec assoc_aux = function
     | [] -> Not_found
-    | x::r -> if fst(x) = a then snd(x) else assoc_aux a r
-  in fun a l -> assoc_aux a l
+    | x::r ->
+      match x with
+      | (xl, xr) -> if xl = a then xr else assoc_aux r
+  in fun l -> assoc_aux l
 
-let assoc_opt =
-  let rec assoc_opt_aux a = function
+let assoc_opt a =
+  let rec assoc_opt_aux = function
     | [] -> None
-    | x::r -> if fst(x) = a then snd(x) else assoc_opt_aux a r
-  in fun a l -> assoc_opt_aux a l
+    | x::r ->
+      match x with
+      | (xl, xr) -> if xl = a then Some xr else assoc_opt_aux r
+  in fun l -> assoc_opt_aux l
 
-let assq =
-  let rec assq_aux a = function
+let assq a =
+  let rec assq_aux = function
     | [] -> Not_found
-    | x::r -> if fst(x) == a then snd(x) else assq_aux a r
-  in fun a l -> assq_aux a l
+    | x::r ->
+      match x with
+      | (xl, xr) -> if xl == a then xr else assq_aux r
+  in fun l -> assq_aux l
 
-let assq_opt =
-  let rec assq_opt_aux a = function
+let assq_opt a =
+  let rec assq_opt_aux = function
     | [] -> None
-    | x::r -> if fst(x) == a then snd(x) else assq_opt_aux a r
-  in fun a l -> assq_opt_aux a l
+    | x::r ->
+      match x with
+      | (xl, xr) -> if xl == a then Some xr else assq_opt_aux r
+  in fun l -> assq_opt_aux l
 
-let mem_assoc =
-  let rec mem_assoc_aux a = function
+let mem_assoc a =
+  let rec mem_assoc_aux = function
     | [] -> false
-    | x::r -> if fst(x) = a then true else mem_assoc_aux a r
-  in fun a l -> mem_assoc_aux a l
+    | x::r ->
+      match x with
+      | (xl, _xr) -> xl = a || mem_assoc_aux r
+  in fun l -> mem_assoc_aux l
 
-let mem_assq =
-  let rec mem_assq_aux a = function
+let mem_assq a =
+  let rec mem_assq_aux = function
     | [] -> false
-    | x::r -> if fst(x) == a then true else mem_assq_aux a r
-  in fun a l -> mem_assq_aux a l
+    | x::r ->
+      match x with
+      | (xl, _xr) -> xl == a || mem_assq_aux r
+  in fun l -> mem_assq_aux l
 
-let remove_assoc =
-  let rec remove_assoc_aux a = function
-  | [] -> []
-  | x::l -> if fst(x) = a then l else x::(remove_assoc_aux a l)
-  in fun a l -> remove_assoc_aux a l
+let remove_assoc a =
+  let rec remove_assoc_aux acc = function
+  | [] -> acc
+  | (xl, _ as pair)::l -> if xl = a then l else remove_assoc_aux (pair::acc) l
+in fun l -> rev (remove_assoc_aux [] l)
 
-let remove_assocq =
-  let rec remove_assocq_aux a = function
-  | [] -> []
-  | x::l -> if fst(x) == a then l else x::(remove_assocq_aux a l)
-  in fun a l -> remove_assocq_aux a l
+let remove_assocq a =
+  let rec remove_assocq_aux acc = function
+  | [] -> acc
+  | (xl, _ as pair)::l -> if xl = a then l else remove_assocq_aux (pair::acc) l
+in fun l -> rev (remove_assocq_aux [] l)
 
 let find_opt f =
   let rec find_opt_aux = function
@@ -270,4 +299,27 @@ let filter_map f =
       | Some value -> filter_map_aux (value::acc) r
   in fun l -> filter_map_aux [] l
 
-(* concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let concat_map f l = flatten (map f l)
+
+let partition f =
+  let rec parti_aux satisf disatisf = function
+    | [] -> (rev satisf, rev disatisf)
+    | x::r ->
+      if f x then
+        parti_aux (x::satisf) disatisf r
+      else
+        parti_aux satisf (x::disatisf) r
+  in fun l -> parti_aux [] [] l
+
+let partition_map f =
+  let rec parti_map_aux satisf disatisf = function
+    | [] -> (rev satisf, rev disatisf)
+    | x::r ->
+      match f x with
+      | Either.Left x -> parti_map_aux (x::satisf) disatisf r
+      | Either.Right x -> parti_map_aux satisf (x::disatisf) r
+  in fun l -> parti_map_aux [] [] l
+
+
+
+(* fold_left_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
