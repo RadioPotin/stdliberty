@@ -251,4 +251,23 @@ let find_all f =
 
 let filter = find_all
 
-(* filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let filteri f =
+  let rec filteri_aux i acc = function
+    | [] -> rev acc
+    | x::r ->
+      if f i x then
+        filteri_aux (i + 1) (x::acc) r
+      else
+        filteri_aux (i + 1) acc r
+  in fun l -> filteri_aux 0 [] l
+
+let filter_map f =
+  let rec filter_map_aux acc = function
+    | [] -> rev acc
+    | x::r ->
+      match f x with
+      | None -> filter_map_aux acc r
+      | Some value -> filter_map_aux (value::acc) r
+  in fun l -> filter_map_aux [] l
+
+(* concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
