@@ -234,6 +234,21 @@ let find_exn f =
     | x::r -> if f x then x else find_exn_aux r
   in fun l -> find_exn_aux l
 
+let find_map f =
+  let rec find_map_aux = function
+    | [] -> None
+    | x::r ->
+      match f x with
+      | None -> find_map_aux r
+      | Some b -> b
+  in fun l -> find_map_aux l
 
+let find_all f =
+  let rec find_all_aux acc = function
+    | [] -> rev acc
+    | x::r -> if f x then find_all_aux (x::acc) r else find_all_aux acc r
+  in fun l -> find_all_aux [] l
 
-(* find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let filter = find_all
+
+(* filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
