@@ -172,4 +172,68 @@ let memq =
     | x::r -> if a == x then true else memqaux a r
 in fun a set -> memqaux a set
 
-(* assoc assoc_opt assq assq_opt mem_assoc mem_assq remove_assoc remove_assq find (= find_opt) find_exn find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
+let assoc =
+  let rec assoc_aux a = function
+    | [] -> Not_found
+    | x::r -> if fst(x) = a then snd(x) else assoc_aux a r
+  in fun a l -> assoc_aux a l
+
+let assoc_opt =
+  let rec assoc_opt_aux a = function
+    | [] -> None
+    | x::r -> if fst(x) = a then snd(x) else assoc_opt_aux a r
+  in fun a l -> assoc_opt_aux a l
+
+let assq =
+  let rec assq_aux a = function
+    | [] -> Not_found
+    | x::r -> if fst(x) == a then snd(x) else assq_aux a r
+  in fun a l -> assq_aux a l
+
+let assq_opt =
+  let rec assq_opt_aux a = function
+    | [] -> None
+    | x::r -> if fst(x) == a then snd(x) else assq_opt_aux a r
+  in fun a l -> assq_opt_aux a l
+
+let mem_assoc =
+  let rec mem_assoc_aux a = function
+    | [] -> false
+    | x::r -> if fst(x) = a then true else mem_assoc_aux a r
+  in fun a l -> mem_assoc_aux a l
+
+let mem_assq =
+  let rec mem_assq_aux a = function
+    | [] -> false
+    | x::r -> if fst(x) == a then true else mem_assq_aux a r
+  in fun a l -> mem_assq_aux a l
+
+let remove_assoc =
+  let rec remove_assoc_aux a = function
+  | [] -> []
+  | x::l -> if fst(x) = a then l else x::(remove_assoc_aux a l)
+  in fun a l -> remove_assoc_aux a l
+
+let remove_assocq =
+  let rec remove_assocq_aux a = function
+  | [] -> []
+  | x::l -> if fst(x) == a then l else x::(remove_assocq_aux a l)
+  in fun a l -> remove_assocq_aux a l
+
+let find_opt f =
+  let rec find_opt_aux = function
+    | [] -> None
+    | x::r -> if f x then Some x else find_opt_aux r
+  in fun l -> find_opt_aux l
+
+let find = find_opt
+
+let find_exn f =
+  let rec find_exn_aux = function
+    | [] -> Not_found
+    | x::r -> if f x then x else find_exn_aux r
+  in fun l -> find_exn_aux l
+
+
+
+(* find_map find_all (=filter) filteri filter_map concat_map fold_left_map partition partition_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
