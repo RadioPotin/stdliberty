@@ -257,9 +257,11 @@ let find_opt f =
 
 let find = find_opt
 
+let notfound () = raise Not_found
+
 let find_exn f =
   let rec find_exn_aux = function
-    | [] -> Not_found
+    | [] -> notfound ()
     | x::r -> if f x then x else find_exn_aux r
   in fun l -> find_exn_aux l
 
@@ -269,7 +271,7 @@ let find_map f =
     | x::r ->
       match f x with
       | None -> find_map_aux r
-      | Some b -> b
+      | Some _ as b -> b
   in fun l -> find_map_aux l
 
 let find_all f =
@@ -299,8 +301,6 @@ let filter_map f =
       | Some value -> filter_map_aux (value::acc) r
   in fun l -> filter_map_aux [] l
 
-let concat_map f l = flatten (map f l)
-
 let partition f =
   let rec parti_aux satisf disatisf = function
     | [] -> (rev satisf, rev disatisf)
@@ -320,6 +320,8 @@ let partition_map f =
       | Either.Right x -> parti_map_aux satisf (x::disatisf) r
   in fun l -> parti_map_aux [] [] l
 
+(* redo pls *)
+let concat_map f l = flatten (map f l)
 
 
 (* fold_left_map split combine merge compare_lengths compare_length_with equal compare to_seq of_seq *)
