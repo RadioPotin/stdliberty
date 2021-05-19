@@ -327,65 +327,64 @@ let concat_map f =
   in fun l -> concat_map_aux [] l
 
 let split =
-  let rec split_aux (accl, accr) = function
+  let rec split_aux accl accr = function
     | [] -> (rev accl, rev accr)
-    | x::r -> split_aux (fst(x)::accl, snd(x)::accr) r
-  in fun l -> split_aux ([], []) l
+    | (xl, xr)::r -> split_aux (xl::accl) (xr::accr) r
+  in fun l -> split_aux [] [] l
 
 let combine =
   let rec combine_aux acc l1 l2 =
     match l1, l2 with
-    | [], [] -> acc
+    | [], [] -> rev acc
     | x1::r1, x2::r2 -> combine_aux ((x1, x2)::acc) r1 r2
     | _ -> invalid_arg "combine"
   in fun l1 l2 -> combine_aux [] l1 l2
 
-let merge f =
+let merge cmp =
   let rec merge_aux acc l1 l2 =
     match l1, l2 with
+    | [], [] -> rev acc
     | l1, [] -> l1
     | [], l2 -> l2
     | x1::r1, x2::r2 ->
-      if f x1 x2 <= 0 then
-        merge_aux (x1::acc) r1 (x2::r2)
+      if cmp x1 x2 <= 0 then
+        merge_aux (x1::acc) r1 l2
       else
-        merge_aux (x2::acc) (x1::r1) r2
+        merge_aux (x2::acc) l1 r2
   in fun l1 l2 -> merge_aux [] l1 l2
-
-let compare_lengths =
-  let rec compare_lengths_aux accl1 l1 accl2 l2=
-    match l1, l2 with
-    | _::r1, _::r2 -> compare_lengths_aux (accl1 + 1) r1 (accl2 + 1) r2
-    | _ -> Int.compare accl1 accl2
-  in fun l1 l2 -> compare_lengths_aux 0 l1 0 l2
 
 let compare f =
   let rec compare_aux l1 l2 =
     match l1, l2 with
     | [], [] -> 0
-    | [], _ -> 1
-    | _, [] -> -1
+    | [], _ -> -1
+    | _, [] -> 1
     | hd1::tl1, hd2::tl2 ->
       if f hd1 hd2 = 0 then
         compare_aux tl1 tl2
       else f hd1 hd2
   in fun l1 l2 -> compare_aux l1 l2
 
-let compare_length_with =
-  let rec compare_lengths_aux acc len = function
-    | [] -> Int.compare acc len
-    | _::r -> if acc < len then
-        compare_lengths_aux (acc + 1) len r
-      else Int.compare acc len
-  in fun l len -> compare_lengths_aux 0 len l
-
 let equal eq =
   let rec equal_aux l1 l2 =
     match l1, l2 with
     | [], [] -> true
-    | [], _::_ -> false
-    | _::_, [] -> false
     | x1::r1, x2::r2 -> eq x1 x2 && equal_aux r1 r2
+    | _, _ -> false
   in fun l1 l2 -> equal_aux l1 l2
+
+let rec compare_lengths l1 l2=
+    match l1, l2 with
+    | [], [] -> 0
+    | [], _ -> -1
+    | _, [] -> 1
+    | _::r1, _::r2 -> compare_lengths r1 r2
+
+let rec compare_length_with l len =
+  match l with
+    | [] -> if len = 0 then 0
+    else if len < 0 then -1
+    else 1
+    | _::r -> compare_length_with r (len - 1)
 
 (* fold_left_map to_seq of_seq *)
