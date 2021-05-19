@@ -387,4 +387,4 @@ let rec compare_length_with l len =
     else 1
     | _::r -> compare_length_with r (len - 1)
 
-(* fold_left_map *)
+(* fold_left_map to_seq of_seq *)
