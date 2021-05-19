@@ -387,4 +387,19 @@ let rec compare_length_with l len =
     else 1
     | _::r -> compare_length_with r (len - 1)
 
-(* fold_left_map to_seq of_seq *)
+let fold_left_map f =
+  let rec aux acc acc_l = function
+    | [] -> acc, rev acc_l
+    | hd::tl ->
+      let acc, hd = f acc hd in
+      aux acc (hd::acc_l) tl
+  in fun acc l -> aux acc [] l
+
+let to_seq =
+  let rec to_seq_aux l () =
+    match l with
+    | [] -> Seq.Nil
+    | x::r -> Seq.Cons (x, to_seq_aux r)
+in fun l -> to_seq_aux l
+
+ (* of_seq *)
