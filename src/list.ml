@@ -383,7 +383,7 @@ let rec compare_lengths l1 l2=
 let rec compare_length_with l len =
   match l with
     | [] -> if len = 0 then 0
-    else if len < 0 then -1
+    else if len > 0 then -1
     else 1
     | _::r -> compare_length_with r (len - 1)
 
