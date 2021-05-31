@@ -55,6 +55,16 @@ let sub a pos len =
   else
     unsafe_sub a pos len
 
+let fill a pos len x =
+  if len < 0 || pos < 0 || len + pos > length a then invalid_arg "fill"
+  else
+    unsafe_fill a pos len x
+
+let blit a1 pos1 a2 pos2 len =
+  if len < 0 || pos1 < 0 || len + pos1 > length a1 || pos2 < 0 || len + pos2 > length a2  then invalid_arg "blit"
+  else
+    unsafe_blit a1 pos1 a2 pos2 len
+
 (*
-  fill, blit, to_list, of_list, iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+to_list, of_list, iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
