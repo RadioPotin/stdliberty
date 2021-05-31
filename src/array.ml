@@ -36,13 +36,17 @@ let make_matrix dx dy v =
   done;
   matrix
 
+let copy a =
+   let l = length a in
+   if l = 0 then [||] else unsafe_sub a 0 l
+
 let append a1 a2 =
   let l1 = length a1 in
   let l2 = length a2 in
   let len = l1 + l2 in
   if len > Sys.max_array_length then invalid_arg "append"
-  else if l1 = 0 then a2
-  else if l2 = 0 then a1
+  else if l1 = 0 then copy a2
+  else if l2 = 0 then copy a1
   else
     append_prim a1 a2
 
@@ -51,7 +55,6 @@ let sub a pos len =
   else
     unsafe_sub a pos len
 
-
 (*
- sub, copy, fill, blit, to_list, of_list, iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+  fill, blit, to_list, of_list, iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
