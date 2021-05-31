@@ -70,6 +70,17 @@ let to_list =
     if n < 0 then l else to_list_aux a ((unsafe_get a n)::l) (n - 1)
   in fun a -> to_list_aux a [] (pred (length a))
 
+let of_list =
+  let rec of_list_aux a i = function
+    | [] -> a
+    | x::r ->
+      unsafe_set a i x;
+      of_list_aux a (i + 1) r
+in fun l ->
+  let len = List.length l in if len > Sys.max_array_length then invalid_arg "of_list"
+      else if l = [] then of_list_aux [||] 0 []
+      else let a = create len (List.hd l) in of_list_aux a 0 l
+
 (*
- of_list, iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+ iter, iteri, map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
