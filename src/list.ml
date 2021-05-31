@@ -401,5 +401,3 @@ let to_seq =
     | [] -> Seq.Nil
     | x::r -> Seq.Cons (x, to_seq_aux r)
 in fun l -> to_seq_aux l
-
- (* of_seq *)
