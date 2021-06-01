@@ -115,6 +115,29 @@ in fun a ->
     let acc = create len (f (len - 1) (unsafe_get a (len - 1))) in
   mapi_aux a acc (len - 2)
 
+let fold_left f init a =
+  let r = ref init in
+  for i = 0 to (length a) - 1 do
+    r := f !r (unsafe_get a i)
+  done;
+  !r
+
+let fold_right f a init =
+  let r = ref init in
+  for i = (length a) - 1 downto 0 do
+    r := f (unsafe_get a i) !r
+  done;
+  !r
+
+  let iter2 f a b =
+    let len = length a in
+    if len <> length b then invalid_arg "iter2"
+    else
+      for i = 0 to len - 1 do
+        f (unsafe_get a i) (unsafe_get b i)
+        done
+
+
 (*
- mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+ map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
