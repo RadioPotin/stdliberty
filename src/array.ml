@@ -193,6 +193,32 @@ let memq el a =
     else scan (i + 1)
   in scan 0
 
-(*
- *   sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
- *)
+let to_seq a =
+  let rec to_seq_aux i () =
+    if i < length a then
+      let el = unsafe_get a i in
+      Seq.Cons (el, to_seq_aux (i + 1))
+    else Seq.Nil
+  in to_seq_aux 0
+
+let to_seqi a =
+  let rec to_seqi_aux i () =
+    if i < length a then
+      let el = unsafe_get a i in
+      Seq.Cons ((el, i), to_seqi_aux (i + 1))
+    else Seq.Nil
+  in to_seqi_aux 0
+
+let of_rev_list = function
+  | [] -> [||]
+  | x::r as l ->
+    let len = List.length l in
+    let arr = create len x in
+    let rec fill i = function
+      | [] -> arr
+      | x::r -> unsafe_set arr i x; fill (i + 1) r
+    in
+    fill (len - 2) r
+
+let of_seq i =
+  let l = Seq.fold_left (fun acc x -> x::acc) [] i in of_rev_list l
