@@ -144,16 +144,16 @@ let for_all f a =
   let len = length a in
   let rec scan i =
     if i = len then true
-    else if f (unsafe_get a i) then scan (i - 1)
+    else if f (unsafe_get a i) then scan (i + 1)
     else false in
   scan 0
 
 let exists f a =
   let len = length a in
   let rec scan i =
-   if f (unsafe_get a i) then true
-    else if i = len then false
-    else scan (i - 1) in
+    if i = len then false
+    else if f (unsafe_get a i) then true
+    else scan (i + 1) in
   scan 0
 
 let for_all2 f a b =
@@ -171,11 +171,28 @@ let exists2 f a b =
   if len <> length b then invalid_arg "for_all2"
   else
   let rec scan i =
-   if f (unsafe_get a i) (unsafe_get b i) then true
-    else if i = len then false
-    else scan (i - 1) in
+    if i = len then false
+    else if f (unsafe_get a i) (unsafe_get b i) then true
+    else
+      scan (i + 1) in
   scan 0
 
+let mem el a =
+  let len = length a in
+  let rec scan i =
+    if i = len then false
+    else if compare el a = 0 then true
+    else scan (i + 1)
+  in scan 0
+
+let memq el a =
+  let len = length a in
+  let rec scan i =
+    if i = len then false
+    else if el == (unsafe_get a i) then true
+    else scan (i + 1)
+  in scan 0
+
 (*
-  mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+ *   sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
