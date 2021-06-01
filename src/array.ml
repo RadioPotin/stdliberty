@@ -82,10 +82,10 @@ in fun l ->
       else let a = create len (List.hd l) in of_list_aux a 0 l
 
 let iter f a =
-  for i = 0 to (length a) - 1 do f(unsafe_get a i) done
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 let iteri f a =
-  for i = 0 to (length a) - 1 do f i (unsafe_get a i) done
+  for i = 0 to length a - 1 do f i (unsafe_get a i) done
 
 let map f a =
   let len = length a in
@@ -109,14 +109,14 @@ let mapi f a =
 
 let fold_left f init a =
   let r = ref init in
-  for i = 0 to (length a) - 1 do
+  for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i)
   done;
   !r
 
 let fold_right f a init =
   let r = ref init in
-  for i = (length a) - 1 downto 0 do
+  for i = length a - 1 downto 0 do
     r := f (unsafe_get a i) !r
   done;
   !r
@@ -129,7 +129,53 @@ let fold_right f a init =
         f (unsafe_get a i) (unsafe_get b i)
         done
 
+let map2 f a b =
+  let len = length a in
+  if len <> length b then invalid_arg "map2"
+  else if len = 0 then [||]
+  else
+    let arr = create len (f (unsafe_get a 0) (unsafe_get b 0)) in
+    for i = 1 to len - 1 do
+      unsafe_set arr i (f (unsafe_get a i) (unsafe_get b i))
+    done;
+    arr
+
+let for_all f a =
+  let len = length a in
+  let rec scan i =
+    if i = len then true
+    else if f (unsafe_get a i) then scan (i - 1)
+    else false in
+  scan 0
+
+let exists f a =
+  let len = length a in
+  let rec scan i =
+   if f (unsafe_get a i) then true
+    else if i = len then false
+    else scan (i - 1) in
+  scan 0
+
+let for_all2 f a b =
+  let len = length a in
+  if len <> length b then invalid_arg "for_all2"
+  else
+  let rec scan i =
+    if i = len then true
+    else if f (unsafe_get a i) (unsafe_get b i) then scan (i - 1)
+    else false in
+  scan 0
+
+let exists2 f a b =
+  let len = length a in
+  if len <> length b then invalid_arg "for_all2"
+  else
+  let rec scan i =
+   if f (unsafe_get a i) (unsafe_get b i) then true
+    else if i = len then false
+    else scan (i - 1) in
+  scan 0
 
 (*
- map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+  mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
