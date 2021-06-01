@@ -99,7 +99,9 @@ let map f =
     | n -> unsafe_set acc n (f (unsafe_get a n)); map_aux a acc (n - 1)
 in fun a ->
   let len = (length a) in
-  let acc = create len (f (unsafe_get a (len - 1))) in
+  if len = 0 then [||]
+  else
+    let acc = create len (f (unsafe_get a (len - 1))) in
   map_aux a acc (len - 2)
 
 let mapi f =
@@ -108,7 +110,9 @@ let mapi f =
     | n -> unsafe_set acc n (f n (unsafe_get a n)); mapi_aux a acc (n - 1)
 in fun a ->
   let len = (length a) in
-  let acc = create len (f (len - 1) (unsafe_get a (len - 1))) in
+  if len = 0 then [||]
+  else
+    let acc = create len (f (len - 1) (unsafe_get a (len - 1))) in
   mapi_aux a acc (len - 2)
 
 (*
