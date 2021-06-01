@@ -85,13 +85,13 @@ let iter f =
   let rec iter_aux a = function
     | 0 -> f (unsafe_get a 0); ()
     | n -> f (unsafe_get a n); iter_aux a (n - 1)
-in fun a -> iter_aux a (length a)
+in fun a -> iter_aux a ((length a) - 1)
 
 let iteri f =
   let rec iteri_aux a = function
     | 0 -> f 0 (unsafe_get a 0); ()
     | n -> f n (unsafe_get a n); iteri_aux a (n - 1)
-in fun a -> iteri_aux a (length a)
+in fun a -> iteri_aux a ((length a) - 1)
 
 let map f =
   let rec map_aux a acc = function
@@ -99,8 +99,18 @@ let map f =
     | n -> unsafe_set acc n (f (unsafe_get a n)); map_aux a acc (n - 1)
 in fun a ->
   let len = (length a) in
-  let acc = create len (f (unsafe_get a len)) in
-  map_aux a acc (len - 1)
+  let acc = create len (f (unsafe_get a (len - 1))) in
+  map_aux a acc (len - 2)
+
+let mapi f =
+  let rec mapi_aux a acc = function
+    | 0 -> unsafe_set acc 0 (f 0 (unsafe_get a 0)); acc
+    | n -> unsafe_set acc n (f n (unsafe_get a n)); mapi_aux a acc (n - 1)
+in fun a ->
+  let len = (length a) in
+  let acc = create len (f (len - 1) (unsafe_get a (len - 1))) in
+  mapi_aux a acc (len - 2)
+
 (*
- map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
+ mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
