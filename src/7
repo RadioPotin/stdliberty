@@ -83,14 +83,14 @@ in fun l ->
 
 let iter f =
   let rec iter_aux a = function
-    | 0 -> f (unsafe_get a 0); ()
-    | n -> f (unsafe_get a n); iter_aux a (n - 1)
+    | 0 -> f a.(0); ()
+    | n -> f a.(n); iter_aux a (n - 1)
 in fun a -> iter_aux a (length a)
 
 let iteri f =
   let rec iteri_aux a = function
-    | 0 -> f 0 (unsafe_get a 0); ()
-    | n -> f n (unsafe_get a n); iteri_aux a (n - 1)
+    | 0 -> f 0 a.(0); ()
+    | n -> f n a.(n); iteri_aux a (n - 1)
 in fun a -> iteri_aux a (length a)
 
 let map f =
@@ -99,8 +99,8 @@ let map f =
     | n -> unsafe_set acc n (f (unsafe_get a n)); map_aux a acc (n - 1)
 in fun a ->
   let len = (length a) in
-  let acc = create len (f (unsafe_get a len)) in
-  map_aux a acc (len - 1)
+  let acc = create len (f (unsafe_get a 0)) in
+  map_aux a acc len
 (*
  map, mapi, fold_left, fold_right, iter2, map2, for_all, exists, for_all2, exists2, mem, memq, sort, stable_sort, fast_sort, to_seq, to_seqi, of_seq
  *)
