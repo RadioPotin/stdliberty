@@ -81,39 +81,31 @@ in fun l ->
       else if l = [] then of_list_aux [||] 0 []
       else let a = create len (List.hd l) in of_list_aux a 0 l
 
-let iter f =
-  let rec iter_aux a = function
-    | 0 -> f (unsafe_get a 0); ()
-    | n -> f (unsafe_get a n); iter_aux a (n - 1)
-in fun a -> iter_aux a ((length a) - 1)
+let iter f a =
+  for i = 0 to (length a) - 1 do f(unsafe_get a i) done
 
-let iteri f =
-  let rec iteri_aux a = function
-    | 0 -> f 0 (unsafe_get a 0); ()
-    | n -> f n (unsafe_get a n); iteri_aux a (n - 1)
-in fun a -> iteri_aux a ((length a) - 1)
+let iteri f a =
+  for i = 0 to (length a) - 1 do f i (unsafe_get a i) done
 
-let map f =
-  let rec map_aux a acc = function
-    | 0 -> unsafe_set acc 0 (f (unsafe_get a 0)); acc
-    | n -> unsafe_set acc n (f (unsafe_get a n)); map_aux a acc (n - 1)
-in fun a ->
-  let len = (length a) in
+let map f a =
+  let len = length a in
   if len = 0 then [||]
   else
-    let acc = create len (f (unsafe_get a (len - 1))) in
-  map_aux a acc (len - 2)
+    let arr = create len (f(unsafe_get a 0)) in
+    for i = 1 to len - 1 do
+      unsafe_set arr i (f(unsafe_get a i))
+    done;
+    arr
 
-let mapi f =
-  let rec mapi_aux a acc = function
-    | 0 -> unsafe_set acc 0 (f 0 (unsafe_get a 0)); acc
-    | n -> unsafe_set acc n (f n (unsafe_get a n)); mapi_aux a acc (n - 1)
-in fun a ->
-  let len = (length a) in
+let mapi f a =
+  let len = length a in
   if len = 0 then [||]
   else
-    let acc = create len (f (len - 1) (unsafe_get a (len - 1))) in
-  mapi_aux a acc (len - 2)
+    let arr = create len (f 0 (unsafe_get a 0)) in
+    for i = 1 to len - 1 do
+    unsafe_set arr i (f i (unsafe_get a i))
+  done;
+    arr
 
 let fold_left f init a =
   let r = ref init in
