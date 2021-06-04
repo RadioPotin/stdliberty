@@ -1,6 +1,6 @@
 (library
  (name stdliberty)
- (modules unit bool char list array)
+ (modules unit bool char list array seq)
  (wrapped true))
 
 (executable
